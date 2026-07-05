@@ -1,141 +1,193 @@
-# Bella Tavola — Restaurant Reservation Management System
+# 🍽️ Bella Tavola — Restaurant Reservation Management System
 
-A full-stack reservation system that lets customers book tables and lets
-admins oversee and manage all reservations, built with React, Node/Express,
-and MongoDB.
+A full-stack MERN application for managing restaurant table reservations. Customers can book, view, and cancel their own reservations, while administrators get complete oversight of bookings and tables with built-in conflict detection to prevent double bookings.
 
-## Tech stack
+---
 
-| Layer          | Technology                              |
-|-----------------|------------------------------------------|
-| Frontend        | React 18 (Vite), React Router            |
-| Backend         | Node.js, Express                         |
-| Database        | MongoDB (Mongoose)                       |
-| Authentication  | JWT (JSON Web Tokens), bcrypt for hashing |
+## 🚀 Live Demo
 
-## Project structure
+**Frontend:** https://bellatavola7.netlify.app
+**Backend Health Check:** https://restaurantreservationsystem-production.up.railway.app/api/health
+
+---
+
+## Features
+
+### Customer
+
+- Register and log in with JWT-based authentication
+- Book a table for a specific date, time slot, and party size
+- Smallest available table is auto-assigned based on party size
+- View upcoming and past reservations
+- Cancel a reservation
+
+### Admin
+
+- View and filter all reservations by date or status
+- Edit or cancel any reservation
+- Add, resize, or deactivate restaurant tables
+- Visually distinct admin dashboard
+
+### Core Logic
+
+- Prevents double bookings at both the application and database level
+- Validates table capacity against party size
+- Rejects bookings for past dates or invalid time slots
+- Centralized error handling with clear, actionable messages
+
+---
+
+## Tech Stack
+
+### Frontend
+
+- React (Vite)
+- React Router
+- Context API for auth state
+- Axios
+
+### Backend
+
+- Node.js / Express.js
+- MongoDB with Mongoose
+- JWT authentication
+- bcrypt for password hashing
+
+### Deployment
+
+- Netlify (Frontend)
+- Railway (Backend)
+- MongoDB Atlas (Database)
+
+---
+
+## Project Structure
 
 ```
 restaurant-reservation-system/
+│
 ├── backend/
-│   ├── config/db.js            # MongoDB connection
-│   ├── models/                 # User, Table, Reservation schemas
-│   ├── middleware/              # auth (JWT + roles), validation, error handling
-│   ├── controllers/             # business logic per resource
-│   ├── routes/                  # Express route definitions
-│   ├── utils/                   # time slot constants, DB seed script
-│   └── server.js                # app entry point
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   └── server.js
+│
 └── frontend/
+    ├── public/
     └── src/
-        ├── api/                 # axios client + one file per resource
-        ├── context/AuthContext.jsx
-        ├── components/          # reusable UI building blocks
-        └── pages/                # route-level views (Login, Dashboards, etc.)
+        ├── api/
+        ├── components/
+        ├── context/
+        └── pages/
 ```
 
-## Setup instructions
+---
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- A MongoDB connection string (local `mongod`, or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster)
 
-### 1. Backend
+- Node.js (v18+)
+- MongoDB (local or [Atlas](https://www.mongodb.com/cloud/atlas))
 
-```bash
-cd backend
-npm install
-cp .env.example .env
-# edit .env: set MONGO_URI, JWT_SECRET, and (optionally) admin seed credentials
+### Installation
 
-npm run seed   # creates one admin account + 6 sample tables
-npm run dev    # starts the API on http://localhost:5000
-```
+1. Clone the repository
+   ```bash
+   git clone https://github.com/<your-username>/<your-repo>.git
+   cd <your-repo>
+   ```
 
-### 2. Frontend
+2. Install dependencies for both apps
+   ```bash
+   cd backend && npm install
+   cd ../frontend && npm install
+   ```
 
-```bash
-cd frontend
-npm install
-cp .env.example .env
-# edit .env: set VITE_API_URL to point at the backend (e.g. http://localhost:5000/api)
+3. Create a `.env` file in `backend/`
+   ```env
+   PORT=5000
+   NODE_ENV=development
+   MONGO_URI=your-mongodb-connection-string
+   JWT_SECRET=your-secret-key
+   JWT_EXPIRES_IN=7d
+   CLIENT_ORIGIN=http://localhost:5173
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=your-admin-password
+   ADMIN_NAME=Restaurant Admin
+   ```
 
-npm run dev    # starts the app on http://localhost:5173
-```
+4. Create a `.env` file in `frontend/`
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
 
-### 3. Log in
-- **Admin:** the email/password you set as `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `backend/.env` before running `npm run seed`.
-- **Customer:** register a new account from the app's Sign Up page.
+5. Seed the database with an admin account and sample tables
+   ```bash
+   cd backend
+   npm run seed
+   ```
 
-## Assumptions made
+6. Run both servers
+   ```bash
+   # Terminal 1
+   cd backend && npm run dev
 
-- **Single restaurant, fixed tables.** The system models one restaurant with a small, admin-managed set of tables (seeded with 6 tables of varying capacity). Tables are soft-deleted (`isActive: false`) rather than removed, to preserve reservation history.
-- **Fixed time slots, not arbitrary times.** Reservations are made in eight fixed 1-hour slots (11:00–15:00 lunch, 18:00–22:00 dinner) rather than any arbitrary start time. This was a deliberate simplification: it makes "does this overlap with an existing reservation" a simple equality check instead of interval-overlap math, which keeps the conflict logic easy to verify correct — the assignment explicitly calls out availability/validation as a key evaluation area, so I prioritized getting that logic unambiguously right over supporting arbitrary durations.
-- **Self-service signup is customer-only.** The public registration form always creates a `customer` account. The one admin account is created via a seed script, not through the UI, since there's no invite/approval flow in scope — this stops anyone from just signing up as an admin.
-- **No table selection UI for customers.** Customers request a date, time slot, and party size; the backend auto-assigns the smallest available table that fits the party (like a host seating a walk-in). This keeps the conflict-avoidance logic centralized on the server rather than trusting the client to pick a free table. Admins, by contrast, can see and reassign the specific table on any reservation.
-- **Cancelled reservations are kept, not deleted**, both for audit history and because "cancel" should free up the slot, not erase the record.
+   # Terminal 2
+   cd frontend && npm run dev
+   ```
 
-## Reservation & availability logic
+7. Open `http://localhost:5173` in your browser.
 
-This is the core of the assignment, so here's exactly how it works:
+---
 
-1. **Booking (`POST /api/reservations`)**
-   - Reject the request if the date is in the past, or the time slot isn't one of the fixed valid slots.
-   - If the customer didn't request a specific table: find all active tables with `capacity >= guests`, sorted smallest-first, and pick the first one with no existing *confirmed* reservation for that exact `(table, date, timeSlot)`.
-   - If a specific table was requested (used by the admin edit flow): check that table's capacity and availability directly, and reject with a clear message if it's too small or already booked.
-   - **Race condition safety:** two people booking the same slot at the same instant could both pass the availability check before either insert completes. To close that gap, the `Reservation` collection has a **partial unique index** on `(table, date, timeSlot)` scoped to `status: 'confirmed'`. If a race happens, MongoDB itself rejects the second insert with a duplicate-key error, which the controller catches and turns into a friendly 409 response. Cancelled reservations are excluded from the index (via the partial filter), so a cancelled slot can be rebooked.
-2. **Cancelling** sets `status: 'cancelled'` instead of deleting the document — this immediately frees the slot (it's excluded from the conflict check above) while keeping the record for admin visibility.
-3. **Admin edit** (`PUT /api/reservations/:id`) re-runs the same capacity + availability check whenever the table, date, or time slot actually changes, excluding the reservation being edited from the conflict check (so saving a reservation without changing its slot doesn't collide with itself).
+Happy coding! 🎉
 
-## Role-based access control
+---
 
-- Every protected route requires a valid JWT (`Authorization: Bearer <token>`), verified by the `protect` middleware, which loads the user and attaches it to `req.user`.
-- An `authorize('admin')` middleware gates admin-only routes (table management, viewing/editing all reservations, cancelling any reservation).
-- Customers can only ever act on **their own** reservations — `cancelMyReservation` checks `reservation.user` against `req.user._id` and returns `403 Forbidden` otherwise, even if they know a valid reservation ID.
-- On the frontend, `ProtectedRoute` reads the logged-in user's role from `AuthContext` and redirects: unauthenticated users to `/login`, and users with the wrong role to their own dashboard (a customer can't navigate to `/admin`, and vice versa). This is a UX convenience, not a security boundary — the real enforcement is in the backend middleware described above.
-- The Navbar and dashboard are visually distinct for admins (different header color and an "Admin" badge) so it's always clear which mode you're in.
+## Role-Based Access
 
-## API overview
+| Role     | Access |
+|----------|--------|
+| Customer | Book, view, and cancel their own reservations |
+| Admin    | View/edit/cancel all reservations, manage tables |
 
-| Method | Route                          | Access          | Purpose |
-|--------|----------------------------------|------------------|---------|
-| POST   | `/api/auth/register`            | Public           | Create a customer account |
-| POST   | `/api/auth/login`                | Public           | Log in, receive a JWT |
-| GET    | `/api/auth/me`                   | Authenticated    | Get the current user |
-| GET    | `/api/tables`                    | Authenticated    | List active tables |
-| POST   | `/api/tables`                    | Admin            | Add a table |
-| PUT    | `/api/tables/:id`                | Admin            | Edit a table |
-| DELETE | `/api/tables/:id`                | Admin            | Deactivate a table |
-| POST   | `/api/reservations`              | Customer         | Create a reservation |
-| GET    | `/api/reservations/my`           | Customer         | List my reservations |
-| DELETE | `/api/reservations/:id`          | Customer (owner) | Cancel my reservation |
-| GET    | `/api/reservations?date=&status=`| Admin            | List/filter all reservations |
-| PUT    | `/api/reservations/:id`          | Admin            | Update any reservation |
-| DELETE | `/api/reservations/:id/admin`    | Admin            | Cancel any reservation |
+Admin accounts are created only via the seed script — public sign-up always creates a customer account.
 
-All error responses share the shape `{ success: false, message }` (or `errors: [...]` for field-level validation errors), produced by a single centralized error handler.
+---
 
-## Deployment
+## Reservation & Availability Logic
 
-- **Backend:** deploy `backend/` to Render/Railway (Node web service). Set `MONGO_URI`, `JWT_SECRET`, `CLIENT_ORIGIN` (your deployed frontend URL), and the `ADMIN_*` vars, then run the seed script once (`npm run seed`) via the platform's shell/console.
-- **Frontend:** deploy `frontend/` to Vercel/Netlify (or the same platform) as a static Vite build. Set `VITE_API_URL` to your deployed backend's `/api` URL.
-- **Database:** a free MongoDB Atlas cluster works well; whitelist `0.0.0.0/0` (or your platform's egress IPs) so the backend can connect.
+- Reservations use fixed 1-hour time slots rather than arbitrary times, keeping conflict checks a simple, verifiable equality check.
+- When booking, the backend auto-assigns the smallest available table that fits the party size.
+- A MongoDB partial unique index on `(table, date, timeSlot)` acts as a safety net against race conditions, in addition to the application-level check.
+- Cancelling a reservation frees the slot immediately without deleting the record, preserving history.
 
-_(Live URL and GitHub link to be added here once deployed.)_
+---
 
-## Known limitations
+## Known Limitations
 
-- Time slots are fixed (1-hour blocks); there's no support for custom reservation durations.
-- No email/SMS confirmation or reminder notifications (explicitly out of scope per the assignment).
-- No pagination on the admin "all reservations" list — fine at seed-data scale, but would need it for a busy restaurant with a long history.
-- Admin accounts can only be created via the seed script, not through any admin UI.
-- No password reset flow.
-- Client-side role redirects are a UX nicety; all real access control is enforced server-side, which is the correct place for it, but it does mean there's no fine-grained UI permission system beyond "customer vs admin."
+- Fixed time slots only — no custom durations
+- No email/SMS notifications
+- No pagination on the admin reservations list
 
-## Areas for improvement with more time
+---
 
-- Support arbitrary start times + durations instead of fixed slots, with proper interval-overlap conflict checks.
-- Add pagination/infinite scroll and search to the admin reservation list.
-- Add automated tests (Jest/Supertest for the API's availability logic in particular, since that's the highest-risk area for bugs).
-- Add a "party size vs. table capacity" visual indicator on the admin table manager (e.g. warn if deactivating a table would orphan future reservations).
-- Add optimistic UI updates on the frontend instead of refetching the full list after every mutation.
-- Rate limiting and stricter input sanitization on the API for production hardening.
+## Future Improvements
+
+- Arbitrary reservation durations with interval-overlap checks
+- Automated tests for the availability logic
+- Pagination and search on the admin dashboard
+- Email confirmations and reminders
+
+---
+
+## Author
+
+Hasini Kallepalli
+GitHub: [https://github.com/Hasini00]
+
+---
