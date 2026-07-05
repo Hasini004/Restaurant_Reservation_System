@@ -1,16 +1,24 @@
 # 🍽️ Bella Tavola — Restaurant Reservation Management System
 
+---
+
 A full-stack MERN application for managing restaurant table reservations. Customers can book, view, and cancel their own reservations, while administrators get complete oversight of bookings and tables with built-in conflict detection to prevent double bookings.
 
-
+---
 
 ## 🚀 Live Demo
 
 **Frontend:** https://bellatavola7.netlify.app
+
+---
+
 **Backend Health Check:** https://restaurantreservationsystem-production.up.railway.app/api/health
 
+---
 
 ## Features
+
+---
 
 ### Customer
 
@@ -20,12 +28,16 @@ A full-stack MERN application for managing restaurant table reservations. Custom
 - View upcoming and past reservations
 - Cancel a reservation
 
+---
+
 ### Admin
 
 - View and filter all reservations by date or status
 - Edit or cancel any reservation
 - Add, resize, or deactivate restaurant tables
 - Visually distinct admin dashboard
+
+---
 
 ### Core Logic
 
@@ -34,8 +46,11 @@ A full-stack MERN application for managing restaurant table reservations. Custom
 - Rejects bookings for past dates or invalid time slots
 - Centralized error handling with clear, actionable messages
 
+---
 
 ## Tech Stack
+
+---
 
 ### Frontend
 
@@ -44,6 +59,8 @@ A full-stack MERN application for managing restaurant table reservations. Custom
 - Context API for auth state
 - Axios
 
+---
+
 ### Backend
 
 - Node.js / Express.js
@@ -51,12 +68,15 @@ A full-stack MERN application for managing restaurant table reservations. Custom
 - JWT authentication
 - bcrypt for password hashing
 
+---
+
 ### Deployment
 
 - Netlify (Frontend)
 - Railway (Backend)
 - MongoDB Atlas (Database)
 
+---
 
 ## Project Structure
 
@@ -81,6 +101,7 @@ restaurant-reservation-system/
         └── pages/
 ```
 
+---
 
 ## Getting Started
 
@@ -138,9 +159,11 @@ restaurant-reservation-system/
 
 7. Open `http://localhost:5173` in your browser.
 
+---
 
 Happy coding! 🎉
 
+---
 
 ## Role-Based Access
 
@@ -151,6 +174,7 @@ Happy coding! 🎉
 
 Admin accounts are created only via the seed script — public sign-up always creates a customer account.
 
+---
 
 ## Reservation & Availability Logic
 
@@ -159,6 +183,7 @@ Admin accounts are created only via the seed script — public sign-up always cr
 - A MongoDB partial unique index on `(table, date, timeSlot)` acts as a safety net against race conditions, in addition to the application-level check.
 - Cancelling a reservation frees the slot immediately without deleting the record, preserving history.
 
+---
 
 ## Known Limitations
 
@@ -166,6 +191,7 @@ Admin accounts are created only via the seed script — public sign-up always cr
 - No email/SMS notifications
 - No pagination on the admin reservations list
 
+---
 
 ## Future Improvements
 
@@ -174,6 +200,7 @@ Admin accounts are created only via the seed script — public sign-up always cr
 - Pagination and search on the admin dashboard
 - Email confirmations and reminders
 
+---
 
 ## Author
 
